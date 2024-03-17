@@ -38,7 +38,7 @@ cd "$(dirname "$0")"
 # 		fi
 # 	else
 # 		if [ .$switch_package_all = .true ]; then
-switch/package-all.sh
+switch/package-release.sh
 	# 	else
 	# 		switch/package-release.sh
 	# 	fi
