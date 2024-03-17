@@ -12,16 +12,22 @@ cd "$(dirname "$0")"
 #send a message
 verbose "Configuring IPTables"
 
-#defaults to nftables by default this enables iptables
-if [ ."$os_codename" = ."buster" ]; then
-	update-alternatives --set iptables /usr/sbin/iptables-legacy
-	update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
-fi
-if [ ."$os_codename" = ."bullseye" ]; then
+# #defaults to nftables by default this enables iptables
+# if [ ."$os_codename" = ."buster" ]; then
+# 	update-alternatives --set iptables /usr/sbin/iptables-legacy
+# 	update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+# fi
+# if [ ."$os_codename" = ."bullseye" ]; then
+# 	apt-get install -y iptables
+# 	update-alternatives --set iptables /usr/sbin/iptables-legacy
+# 	update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+# fi
+
+# if [ ."$os_codename" = ."bookworm" ]; then
 	apt-get install -y iptables
 	update-alternatives --set iptables /usr/sbin/iptables-legacy
 	update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
-fi
+# fi
 
 #remove ufw
 ufw reset
@@ -87,10 +93,11 @@ iptables -P FORWARD DROP
 iptables -P OUTPUT ACCEPT
 
 #save iptables to make it persistent
-#mkdir /etc/iptables
-#iptables-save > /etc/iptables/rules.v4
+# mkdir /etc/iptables
+# iptables-save > /etc/iptables/rules.v4
+
+apt-get install -y iptables-persistent
 
 #answer the questions for iptables persistent and save the iptable rules
 echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
 echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
-apt-get install -y iptables-persistent

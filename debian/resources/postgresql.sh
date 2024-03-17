@@ -18,49 +18,49 @@ password=$(dd if=/dev/urandom bs=1 count=20 2>/dev/null | base64)
 echo "Install PostgreSQL and create the database and users\n"
 
 #included in the distribution
-if [ ."$database_repo" = ."system" ]; then
-	if [ ."$database_host" = ."127.0.0.1" ] || [ ."$database_host" = ."::1" ] ; then
+# if [ ."$database_repo" = ."system" ]; then
+# 	if [ ."$database_host" = ."127.0.0.1" ] || [ ."$database_host" = ."::1" ] ; then
 		apt-get install -y sudo postgresql
-	else
-		apt-get install -y sudo postgresql-client
-	fi
-fi
+# 	else
+# 		apt-get install -y sudo postgresql-client
+# 	fi
+# fi
 
 #make sure keyrings directory exits
-mkdir /etc/apt/keyrings
+# mkdir /etc/apt/keyrings
 
 #postgres official repository
-if [ ."$database_repo" = ."official" ]; then
-	sh -c 'echo "deb [signed-by=/etc/apt/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-	wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/keyrings/pgdg.gpg
-	chmod 644 /etc/apt/keyrings/pgdg.gpg
-	apt-get update && apt-get upgrade -y
-	if [ ."$database_host" = ."127.0.0.1" ] || [ ."$database_host" = ."::1" ] ; then
-		if [ ."$database_version" = ."latest" ]; then
-			apt-get install -y sudo postgresql
-                else
-                        apt-get install -y sudo postgresql-$database_version
-                fi
-	else
-		apt-get install -y sudo postgresql-client
-	fi
-fi
+# if [ ."$database_repo" = ."official" ]; then
+# 	sh -c 'echo "deb [signed-by=/etc/apt/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+# 	wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/keyrings/pgdg.gpg
+# 	chmod 644 /etc/apt/keyrings/pgdg.gpg
+# 	apt-get update && apt-get upgrade -y
+# 	if [ ."$database_host" = ."127.0.0.1" ] || [ ."$database_host" = ."::1" ] ; then
+# 		if [ ."$database_version" = ."latest" ]; then
+# 			apt-get install -y sudo postgresql
+#                 else
+#                         apt-get install -y sudo postgresql-$database_version
+#                 fi
+# 	else
+# 		apt-get install -y sudo postgresql-client
+# 	fi
+# fi
 
-#add PostgreSQL and 2ndquadrant repos
-if [ ."$database_repo" = ."2ndquadrant" ]; then
-	if [ ."$database_host" = ."127.0.0.1" ] || [ ."$database_host" = ."::1" ] ; then
-		apt install -y curl
-		curl https://dl.2ndquadrant.com/default/release/get/deb | bash
-		if [ ."$os_codename" = ."buster" ]; then
-			sed -i /etc/apt/sources.list.d/2ndquadrant-dl-default-release.list -e 's#buster#stretch#g'
-		fi
-		if [ ."$os_codename" = ."bullseye" ]; then
-			sed -i /etc/apt/sources.list.d/2ndquadrant-dl-default-release.list -e 's#bullseye#stretch#g'
-		fi
-		apt update
-		apt-get install -y sudo postgresql-bdr-9.4 postgresql-bdr-9.4-bdr-plugin postgresql-bdr-contrib-9.4	
-	fi
-fi
+# #add PostgreSQL and 2ndquadrant repos
+# if [ ."$database_repo" = ."2ndquadrant" ]; then
+# 	if [ ."$database_host" = ."127.0.0.1" ] || [ ."$database_host" = ."::1" ] ; then
+# 		apt install -y curl
+# 		curl https://dl.2ndquadrant.com/default/release/get/deb | bash
+# 		if [ ."$os_codename" = ."buster" ]; then
+# 			sed -i /etc/apt/sources.list.d/2ndquadrant-dl-default-release.list -e 's#buster#stretch#g'
+# 		fi
+# 		if [ ."$os_codename" = ."bullseye" ]; then
+# 			sed -i /etc/apt/sources.list.d/2ndquadrant-dl-default-release.list -e 's#bullseye#stretch#g'
+# 		fi
+# 		apt update
+# 		apt-get install -y sudo postgresql-bdr-9.4 postgresql-bdr-9.4-bdr-plugin postgresql-bdr-contrib-9.4	
+# 	fi
+# fi
 
 #install the database backup
 #cp backup/fusionpbx-backup /etc/cron.daily
@@ -77,10 +77,10 @@ pg_createcluster $database_version main
 sed -i /etc/postgresql/$database_version/main/pg_hba.conf -e '/^#/!s/scram-sha-256/md5/g'
 
 #systemd
-if [ ."$database_host" = ."127.0.0.1" ] || [ ."$database_host" = ."::1" ] ; then
-	systemctl daemon-reload
-	systemctl restart postgresql
-fi
+# if [ ."$database_host" = ."127.0.0.1" ] || [ ."$database_host" = ."::1" ] ; then
+systemctl daemon-reload
+systemctl restart postgresql
+# fi
 
 #init.d
 #/usr/sbin/service postgresql restart
@@ -89,7 +89,7 @@ fi
 cwd=$(pwd)
 cd /tmp
 
-if [ ."$database_host" = ."127.0.0.1" ] || [ ."$database_host" = ."::1" ] ; then
+# if [ ."$database_host" = ."127.0.0.1" ] || [ ."$database_host" = ."::1" ] ; then
 	#reload the config
   	sudo -u postgres psql -c "SELECT pg_reload_conf();"
 
@@ -102,7 +102,7 @@ if [ ."$database_host" = ."127.0.0.1" ] || [ ."$database_host" = ."::1" ] ; then
 	sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE freeswitch to fusionpbx;"
 	sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE freeswitch to freeswitch;"
 	# ALTER USER fusionpbx WITH PASSWORD 'newpassword';
-fi
+# fi
 
 cd $cwd
 
